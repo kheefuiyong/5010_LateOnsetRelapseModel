@@ -1,0 +1,60 @@
+## Read packages
+
+```{r}
+library(tidyverse)
+library(maftools)
+library(pheatmap)
+library(tidyr)
+library(readr)
+library(TCGAbiolinks)
+library(dplyr)
+library(survival)
+library(survminer)
+library(data.table)
+library(biomaRt)
+library(table1)
+library(caret)
+library(org.Hs.eg.db)
+library(survcomp)
+library(sva)
+library(timeROC)
+library(rms)
+library(readr)
+```
+
+```{r}
+# Define the folder path (using forward slashes)
+data_dir <- "C:/Users/kheef/OneDrive/Documents/GitHub/5010_lateOnsetRelapseInErPositiveBreastCancer/brca_metabric"
+
+# Combine the folder path with the filename
+file_path_clinicalSample <- file.path(data_dir, "data_clinical_sample.txt")
+file_path_clinicalPatient <- file.path(data_dir, "data_clinical_patient.txt")
+
+# Read the file "data_clinical_sample.txt"
+clinical_data_sample_original <- read_tsv(file_path_clinicalSample)
+clinical_data_sample <- read_tsv(file_path_clinicalSample, skip=4)
+
+# Read the file "data_clinical_patient.txt"
+clinical_data_patient_original <- read_tsv(file_path_clinicalPatient)
+clinical_data_patient <- read_tsv(file_path_clinicalPatient, skip=4)
+```
+
+```{r}
+# Check if any patient has more than one sample
+nrow(clinical_data_sample) == length(unique(clinical_data_sample$PATIENT_ID)) # TRUE
+nrow(clinical_data_patient) == length(unique(clinical_data_patient$PATIENT_ID)) # TRUE
+```
+
+```{r}
+# Merge data in "data_clinical_sample.txt" and "data_clinical_patient.txt"
+## "PATIENT_ID" column as common key
+## 2509 subjects
+mergedClinicalData_metabric <- inner_join(clinical_data_sample, clinical_data_patient, by = "PATIENT_ID")
+
+# Save "mergedClinicalData_metabric" as .csv
+save_path <- "C:/Users/kheef/OneDrive/Documents/GitHub/5010_lateOnsetRelapseInErPositiveBreastCancer"
+
+write_csv(mergedClinicalData_metabric, file.path(save_path, "mergedClinicalData_metabric.csv"))
+
+message("File saved to: ", save_path)
+```
